@@ -14,6 +14,8 @@ jobs:
         include:
           - context: ./apps/bitwarden-cli
             image: ghcr.io/${{ github.repository_owner }}/bitwarden-cli
+          - context: ./apps/tf-runner-bw
+            image: ghcr.io/${{ github.repository_owner }}/tf-runner-bw
 
     permissions:
       contents: read
