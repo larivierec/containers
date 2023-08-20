@@ -22,8 +22,14 @@ curl -LO "https://github.com/bitwarden/clients/releases/download/cli-v{$VER}/bw-
 
 LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
 
-COPY --from=ghcr.io/weaveworks/tf-runner:v0.16.0-rc.2 --chown=65532:65532 /usr/local/bin/tf-runner /usr/local/bin/tf-runner 
-COPY --from=public.ecr.aws/hashicorp/terraform:1.5 --chown=65532:65532 /bin/terraform /usr/local/bin/terraform 
+# renovate: datasource=docker depName=weaveworks/tf-runner versioning=docker
+ARG TF_RUNNER_VER v0.16.0-rc.2
+
+# renovate: datasource=docker depName=hashicorp/terraform versioning=docker
+ARG TF_VER 1.5
+
+COPY --from=ghcr.io/weaveworks/tf-runner:${TF_RUNNER_VER} --chown=65532:65532 /usr/local/bin/tf-runner /usr/local/bin/tf-runner 
+COPY --from=public.ecr.aws/hashicorp/terraform:${TF_VER} --chown=65532:65532 /bin/terraform /usr/local/bin/terraform 
 
 RUN chmod +x /usr/local/bin/terraform \
   && chmod +x /usr/local/bin/tf-runner \
