@@ -25,7 +25,7 @@ LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controll
 # renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
 COPY --from=ghcr.io/weaveworks/tf-runner:v0.16.0-rc.2 --chown=65532:65532 /usr/local/bin/tf-runner /usr/local/bin/tf-runner
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
-COPY --from=public.ecr.aws/hashicorp/terraform:1.5 --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
+COPY --from=public.ecr.aws/hashicorp/terraform:1.5.7 --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
 RUN chmod +x /usr/local/bin/terraform \
   && chmod +x /usr/local/bin/tf-runner \
