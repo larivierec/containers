@@ -6,7 +6,7 @@ FROM hashicorp/terraform:1.5.6 as tf
 COPY --from=ghcr.io/weaveworks/tf-runner:v0.16.0-rc.2 --chown=65532:65532 /usr/local/bin/tf-runner /usr/local/bin/tf-runner
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_CLI_VERSION=2023.8.2
+ARG BW_CLI_VERSION=2023.9.0
 
 USER root
 
