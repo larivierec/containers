@@ -1,0 +1,2 @@
+# renovate: datasource=github-releases depName=ProtonMail/proton-bridge versioning=docker
+3.4.2

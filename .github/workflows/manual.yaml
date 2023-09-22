@@ -16,6 +16,8 @@ jobs:
             image: ghcr.io/${{ github.repository_owner }}/bitwarden-cli
           - context: ./apps/tf-runner-bw
             image: ghcr.io/${{ github.repository_owner }}/tf-runner-bw
+          - context: ./apps/protonmail-bridge-docker
+            image: ghcr.io/${{ github.repository_owner }}/protonmail-bridge-docker
 
     permissions:
       contents: read
