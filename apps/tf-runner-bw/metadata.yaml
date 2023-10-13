@@ -1,0 +1,5 @@
+app: tf-runner-bw
+channels:
+  - name: stable
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: true
