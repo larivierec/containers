@@ -1,5 +1,7 @@
 ---
 area/ci:
-  - ".github/**/*"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*"
 area/containers:
-  - "apps/**"
+  - changed-files:
+      - any-glob-to-any-file: "apps/**"
