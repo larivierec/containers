@@ -2,5 +2,6 @@
 **/terraform.tfstate**
 **/*.tfstate
 **/*.bitwarden
+.actsecret
 ## macos
 .DS_Store
