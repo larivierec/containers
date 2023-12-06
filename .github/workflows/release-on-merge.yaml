@@ -1,0 +1,27 @@
+---
+  name: Release on Merge
+  
+  concurrency:
+    group: container-release
+    cancel-in-progress: false
+  
+  on:
+    push:
+      branches: ["main"]
+      paths:
+        - "apps/**"
+        - "!apps/**/metadata.yaml"
+        - "!apps/**/README.md"
+  
+  jobs:
+    get-changed-images:
+      uses: ./.github/workflows/changed-images.yaml
+  
+    build-images:
+      needs: ["get-changed-images"]
+      if: ${{ needs.get-changed-images.outputs.addedOrModified == 'true' }}
+      uses: ./.github/workflows/builder.yaml
+      secrets: inherit
+      with:
+        appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
+        pushImages: true

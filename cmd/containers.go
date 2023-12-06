@@ -78,11 +78,6 @@ func getLatestVersion(subdir, channelName string) string {
 	return ""
 }
 
-func getPublishedVersion(imageName string) string {
-	// Implement your getPublishedVersion logic here
-	return "" // Replace with your actual logic
-}
-
 func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, channels []string) map[string]interface{} {
 	imagesToBuild := map[string]interface{}{
 		"images":         []map[string]interface{}{},
@@ -92,9 +87,7 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, c
 	filteredChannels := []Channel{}
 
 	if len(channels) == 0 {
-		for _, channel := range meta.Channels {
-			filteredChannels = append(filteredChannels, channel)
-		}
+		filteredChannels = append(filteredChannels, meta.Channels...)
 	} else {
 		for _, channel := range meta.Channels {
 			for _, channelName := range channels {
@@ -187,7 +180,6 @@ func main() {
 	}
 	processSpecificApps(selectedApps, forRelease, force, channels, imagesToBuild)
 
-	// Print or process the imagesToBuild map as needed
 	output, err := json.Marshal(imagesToBuild)
 	if err != nil {
 		fmt.Println("Error marshaling imagesToBuild:", err)
@@ -219,9 +211,11 @@ func processSpecificApps(selectedApps []string, forRelease, force bool, channels
 	}
 }
 
-func getMetadataForFile(subdir, file string) *Metadata {
-	// Implement your logic to retrieve metadata from the file
-	// You can determine the file type (yaml or json) and use the corresponding load function
-	// Return the metadata as a Metadata struct pointer
-	return nil // Replace with your actual logic
-}
+// TODO evaluate if we actually need this
+// func getPublishedVersion(imageName string) string {
+// 	return ""
+// }
+
+// func getMetadataForFile(subdir, file string) *Metadata {
+// 	return nil
+// }

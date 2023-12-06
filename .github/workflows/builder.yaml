@@ -1,9 +1,29 @@
 ---
-name: Build & publish images
+name: Build & publish images v2
+
 on:
-  push:
-    tags:
-      - qqtesting-v*
+  workflow_call:
+    inputs:
+      appsToBuild:
+        required: false
+        type: string
+        default: ''
+      pushImages:
+        required: false
+        default: false
+        type: boolean
+      force:
+        required: false
+        default: true
+        type: boolean
+        description: Force rebuild
+    secrets:
+      RIVERBOT_APP_ID:
+        description: The App ID of the GitHub App
+        required: true
+      RIVERBOT_APP_PRIVATE_KEY:
+        description: The private key of the GitHub App
+        required: true
 
 jobs:
   prepare-matrix:
@@ -38,9 +58,12 @@ jobs:
         id: prepare-matrices
         shell: bash
         run: |
-          matrices=$(go run cmd/containers.go "all" "true" "false" "stable")
-          echo "matrices=${matrices}" >> $GITHUB_OUTPUT
-          echo "${matrices}"
+          if [[ -z "${{ inputs.appsToBuild }}" ]]; then
+            matrices=$(go run cmd/containers.go "all" "true" "false" "stable")
+          else
+            matrices=$(go run cmd/containers.go "${{ inputs.appsToBuild }}" "true" "false" "stable")
+            echo "matrices=${matrices}" >> $GITHUB_OUTPUT
+            echo "${matrices}"
   build-and-push-image:
     name: Build ${{ matrix.image.name }} (${{ matrix.image.platform }})
     needs: prepare-matrix
