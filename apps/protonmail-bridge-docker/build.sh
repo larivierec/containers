@@ -3,8 +3,7 @@
 set -ex
 
 NUM=2
-VERSION=`sed "${NUM}q;d" VERSION`
-
+VERSION=$1
 # Clone new code
 git clone https://github.com/ProtonMail/proton-bridge.git
 cd proton-bridge

@@ -1,15 +1,16 @@
 FROM golang:1.20 AS build
 
 ARG TARGETPLATFORM
-ARG VERSION
+# renovate: datasource=github-releases depName=ProtonMail/proton-bridge versioning=docker
+ARG VERSION=3.6.1
 
 # Install dependencies
 RUN apt-get update && apt-get install -y git build-essential libsecret-1-dev
 
 # Build
 WORKDIR /build/
-COPY build.sh VERSION /build/
-RUN bash build.sh
+COPY build.sh /build/
+RUN bash build.sh ${VERSION} ${TARGETPLATFORM}
 
 FROM ubuntu:jammy
 
