@@ -1,5 +1,6 @@
 FROM golang:1.20 AS build
 
+ARG TARGETPLATFORM
 ARG VERSION
 
 # Install dependencies

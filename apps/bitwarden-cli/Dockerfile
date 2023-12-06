@@ -1,5 +1,6 @@
 FROM debian:sid
 
+ARG TARGETPLATFORM
 ARG VERSION
 
 WORKDIR /usr/local/bin
