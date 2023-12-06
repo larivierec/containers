@@ -1,5 +1,8 @@
 FROM golang:1.20 AS build
 
+ARG TARGETPLATFORM
+ARG VERSION
+
 # Install dependencies
 RUN apt-get update && apt-get install -y git build-essential libsecret-1-dev
 

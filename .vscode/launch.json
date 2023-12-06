@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Launch Package",
+          "type": "go",
+          "request": "launch",
+          "program": "cmd/containers.go",
+          "cwd": "${workspaceFolder}",
+          "args": [
+              "all",
+              "true",
+              "false",
+              "stable"
+          ]
+      }
+  ]
+}

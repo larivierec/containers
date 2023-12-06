@@ -1,0 +1,5 @@
+app: bitwarden-cli
+channels:
+  - name: stable
+    platforms: ["linux/amd64"]
+    stable: true

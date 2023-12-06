@@ -1,0 +1,5 @@
+app: protonmail-bridge-docker
+channels:
+  - name: stable
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: true
