@@ -62,8 +62,9 @@ jobs:
             matrices=$(go run cmd/containers.go "all" "true" "false" "stable")
           else
             matrices=$(go run cmd/containers.go "${{ inputs.appsToBuild }}" "true" "false" "stable")
-            echo "matrices=${matrices}" >> $GITHUB_OUTPUT
-            echo "${matrices}"
+          fi
+          echo "matrices=${matrices}" >> $GITHUB_OUTPUT
+          echo "${matrices}"
   build-and-push-image:
     name: Build ${{ matrix.image.name }} (${{ matrix.image.platform }})
     needs: prepare-matrix
