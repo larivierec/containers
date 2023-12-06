@@ -9,7 +9,7 @@ FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
 USER root
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION=2023.10.0
+ARG BW_VERSION=2023.12.0
 
 RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_VERSION}
 
