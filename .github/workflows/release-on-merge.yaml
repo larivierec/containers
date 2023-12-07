@@ -1,5 +1,5 @@
 ---
-  name: Release on Merge
+  name: Merge - Build & publish images
 
   concurrency:
     group: container-release
@@ -25,3 +25,4 @@
       with:
         appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
         pushImages: true
+        force: false

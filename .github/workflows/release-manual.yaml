@@ -1,5 +1,5 @@
 ---
-name: Build & publish images
+name: Manual - Build & publish images
 on:
   push:
     tags:

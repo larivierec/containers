@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	github "larivierec/containers/m/v2/internal"
 	"log"
 	"os"
 	"os/exec"
@@ -12,6 +13,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 )
+
+var githubApi = &github.Github{}
 
 type Platform struct {
 	Name           string `yaml:"name"`
@@ -112,14 +115,16 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, c
 			toBuild["name"] = fmt.Sprintf("%s-%s", meta.App, channel.Name)
 		}
 
-		// published := getPublishedVersion(toBuild["name"])
-		// if !force && published != "" && published == version {
-		// 	continue
-		// }
-
-		// toBuild["published_version"] = published
+		// Skip if latest version already published
+		if !force {
+			published, err := githubApi.GetPublishedVersion(toBuild["name"].(string))
+			if (err == nil && published != "") && strings.Contains(published, version) {
+				continue
+			}
+			toBuild["published_version"] = published
+		}
 		toBuild["version"] = version
-		toBuild["tags"] = []string{"rolling", version}
+		toBuild["tags"] = []string{"latest", version}
 		toBuild["label_type"] = "org.opencontainers.image"
 
 		for _, platform := range channel.Platforms {
@@ -146,9 +151,10 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, c
 }
 
 func main() {
+	apiInit()
 	args := os.Args[1:]
 	if len(args) < 3 {
-		fmt.Println("Usage: go run cmd/containers.go <apps> <forRelease> <force> [<channels>]")
+		fmt.Println("Usage: go run cmd/main.go <apps> <forRelease> <force> [<channels>]")
 		os.Exit(1)
 	}
 
@@ -211,11 +217,15 @@ func processSpecificApps(selectedApps []string, forRelease, force bool, channels
 	}
 }
 
-// TODO evaluate if we actually need this
-// func getPublishedVersion(imageName string) string {
-// 	return ""
-// }
+func apiInit() {
+	githubApi.RepoOwner = os.Getenv("GITHUB_REPOSITORY_OWNER")
+	githubApi.Token = os.Getenv("GITHUB_TOKEN")
 
-// func getMetadataForFile(subdir, file string) *Metadata {
-// 	return nil
-// }
+	if githubApi.RepoOwner == "" {
+		githubApi.RepoOwner = os.Getenv("REPO_OWNER")
+	}
+
+	if githubApi.Token == "" {
+		githubApi.Token = os.Getenv("TOKEN")
+	}
+}

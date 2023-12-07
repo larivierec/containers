@@ -5,8 +5,10 @@
           "name": "Launch Package",
           "type": "go",
           "request": "launch",
-          "program": "cmd/containers.go",
+          "mode": "debug",
+          "program": "cmd/main.go",
           "cwd": "${workspaceFolder}",
+          "envFile": "${workspaceFolder}/.goenv",
           "args": [
               "all",
               "true",

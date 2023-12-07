@@ -1,5 +1,5 @@
 ---
-  name: Scheduled Release
+  name: Scheduled - Build & publish images
   
   concurrency:
     group: container-release
@@ -32,3 +32,4 @@
       with:
         appsToBuild: ${{ inputs.appsToBuild }}
         pushImages: true
+        force: false
