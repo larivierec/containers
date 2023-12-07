@@ -47,8 +47,18 @@ type Channel struct {
 
 type Metadata struct {
 	App      string    `yaml:"app"`
+	Url      string    `yaml:"url"`
+	Rules    []string  `yaml:"rules"`
 	Channels []Channel `yaml:"channels"`
 }
+
+// type ImagesToBuild struct {
+// 	Name             string   `yaml:"name"`
+// 	Version          string   `yaml:"version"`
+// 	PublishedVersion string   `yaml:"published_version,omitempty"`
+// 	Tags             []string `yaml:"tags"`
+// 	LabelType        string   `yaml:"label_type"`
+// }
 
 func loadMetadataFileYAML(filePath string) (*Metadata, error) {
 	data, err := os.ReadFile(filePath)
@@ -104,6 +114,7 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 
 	for _, channel := range filteredChannels {
 		channelName := channel.Name
+		call.GetPublishedReleases(meta.Url, meta.Rules)
 		version := getLatestVersion(subdir, channelName)
 		if version == "" {
 			continue
