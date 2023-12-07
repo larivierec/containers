@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"larivierec/containers/m/v2/api"
 	github "larivierec/containers/m/v2/internal"
 	"log"
 	"os"
@@ -81,7 +82,7 @@ func getLatestVersion(subdir, channelName string) string {
 	return ""
 }
 
-func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, channels []string) map[string]interface{} {
+func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bool, call api.Interface, channels []string) map[string]interface{} {
 	imagesToBuild := map[string]interface{}{
 		"images":         []map[string]interface{}{},
 		"imagePlatforms": []map[string]interface{}{},
@@ -117,7 +118,7 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease, force bool, c
 
 		// Skip if latest version already published
 		if !force {
-			published, err := githubApi.GetPublishedVersion(toBuild["name"].(string))
+			published, err := call.GetPublishedVersion(toBuild["name"].(string))
 			if (err == nil && published != "") && strings.Contains(published, version) {
 				continue
 			}
@@ -194,7 +195,7 @@ func main() {
 	fmt.Println(string(output))
 }
 
-func processSpecificApps(selectedApps []string, forRelease, force bool, channels []string, imagesToBuild map[string]interface{}) {
+func processSpecificApps(selectedApps []string, forRelease bool, force bool, channels []string, imagesToBuild map[string]interface{}) {
 	for _, app := range selectedApps {
 		appDir := "apps/" + app
 		if _, err := os.Stat(appDir); os.IsNotExist(err) {
@@ -209,7 +210,7 @@ func processSpecificApps(selectedApps []string, forRelease, force bool, channels
 			continue
 		}
 
-		imageToBuild := getPlatformMetadata(appDir, *meta, forRelease, force, channels)
+		imageToBuild := getPlatformMetadata(appDir, *meta, forRelease, force, githubApi, channels)
 		if imageToBuild != nil {
 			imagesToBuild["images"] = append(imagesToBuild["images"].([]map[string]interface{}), imageToBuild["images"].([]map[string]interface{})...)
 			imagesToBuild["imagePlatforms"] = append(imagesToBuild["imagePlatforms"].([]map[string]interface{}), imageToBuild["imagePlatforms"].([]map[string]interface{})...)
