@@ -1,4 +1,4 @@
-package github
+package internal
 
 import (
 	"encoding/json"
