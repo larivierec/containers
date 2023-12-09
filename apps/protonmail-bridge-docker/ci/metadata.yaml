@@ -1,4 +1,11 @@
+---
 app: protonmail-bridge-docker
+# not in use yet
+url: "https://api.github.com/repos/ProtonMail/proton-bridge/releases/latest"
+rules:
+  - .tag_name
+version_regex:
+  - v*
 channels:
   - name: stable
     platforms: ["linux/amd64", "linux/arm64"]

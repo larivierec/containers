@@ -32,4 +32,4 @@
       with:
         appsToBuild: ${{ inputs.appsToBuild }}
         pushImages: true
-        force: false
+        force: ${{ inputs.force == true }}

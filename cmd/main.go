@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"larivierec/containers/m/v2/api"
-	github "larivierec/containers/m/v2/internal"
+	"larivierec/containers/m/v2/pkg/api"
+	"larivierec/containers/m/v2/pkg/provider"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,29 +16,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var githubApi = &github.Github{}
+// Interface
 
-type Platform struct {
-	Name           string `yaml:"name"`
-	Version        string `yaml:"version"`
-	Platform       string `yaml:"platform"`
-	Channel        string `yaml:"channel"`
-	DockerfilePath string `yaml:"dockerfile"`
-	DockerContext  string `yaml:"context"`
-	LabelType      string `yaml:"label_type"`
-}
+var githubApi = &provider.Github{}
 
-func (p *Platform) toMap() map[string]interface{} {
-	return map[string]interface{}{
-		"name":       p.Name,
-		"version":    p.Version,
-		"platform":   p.Platform,
-		"channel":    p.Channel,
-		"dockerfile": p.DockerfilePath,
-		"context":    p.DockerContext,
-		"label_type": p.LabelType,
-	}
-}
+// Input Structs
 
 type Channel struct {
 	Name      string   `yaml:"name"`
@@ -47,7 +30,33 @@ type Channel struct {
 
 type Metadata struct {
 	App      string    `yaml:"app"`
+	Url      string    `yaml:"url"`
+	Rules    []string  `yaml:"rules"`
 	Channels []Channel `yaml:"channels"`
+}
+
+// Output Structs
+type Image struct {
+	Name             string   `json:"name"`
+	Version          string   `json:"version"`
+	PublishedVersion string   `json:"published_version,omitempty"`
+	Tags             []string `json:"tags"`
+	LabelType        string   `json:"label_type"`
+}
+
+type Platform struct {
+	Name           string `json:"name"`
+	Version        string `json:"version"`
+	Platform       string `json:"platform"`
+	Channel        string `json:"channel"`
+	DockerfilePath string `json:"dockerfile"`
+	DockerContext  string `json:"context"`
+	LabelType      string `json:"label_type"`
+}
+
+type ImagesToBuild struct {
+	ImagePlatforms []Platform `json:"image_platforms"`
+	Images         []Image    `json:"images"`
 }
 
 func loadMetadataFileYAML(filePath string) (*Metadata, error) {
@@ -82,12 +91,8 @@ func getLatestVersion(subdir, channelName string) string {
 	return ""
 }
 
-func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bool, call api.Interface, channels []string) map[string]interface{} {
-	imagesToBuild := map[string]interface{}{
-		"images":         []map[string]interface{}{},
-		"imagePlatforms": []map[string]interface{}{},
-	}
-
+func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bool, call api.Interface, channels []string) *ImagesToBuild {
+	imagesToBuild := &ImagesToBuild{}
 	filteredChannels := []Channel{}
 
 	if len(channels) == 0 {
@@ -104,37 +109,39 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 
 	for _, channel := range filteredChannels {
 		channelName := channel.Name
+		// call.GetPublishedReleases(meta.Url, meta.Rules)
 		version := getLatestVersion(subdir, channelName)
 		if version == "" {
 			continue
 		}
 
-		toBuild := map[string]interface{}{}
+		toBuild := &Image{}
 		if channel.Stable {
-			toBuild["name"] = meta.App
+			toBuild.Name = meta.App
 		} else {
-			toBuild["name"] = fmt.Sprintf("%s-%s", meta.App, channel.Name)
+			toBuild.Name = fmt.Sprintf("%s-%s", meta.App, channel.Name)
 		}
 
 		// Skip if latest version already published
 		if !force {
-			published, err := call.GetPublishedVersion(toBuild["name"].(string))
-			if (err == nil && published != "") && strings.Contains(published, version) {
+			published, resp, err := call.GetPublishedVersion(toBuild.Name)
+			if ((err == nil || resp.StatusCode == http.StatusNotFound) && published != "") && strings.Contains(published, version) {
 				continue
 			}
-			toBuild["published_version"] = published
+			toBuild.PublishedVersion = published
 		}
-		toBuild["version"] = version
-		toBuild["tags"] = []string{"latest", version}
-		toBuild["label_type"] = "org.opencontainers.image"
+		toBuild.Version = version
+		toBuild.Tags = []string{"latest", version}
+		toBuild.LabelType = "org.opencontainers.image"
 
 		for _, platform := range channel.Platforms {
-			platformObj := Platform{}
-			platformObj.Name = toBuild["name"].(string)
-			platformObj.Channel = channel.Name
-			platformObj.Platform = platform
-			platformObj.Version = version
-			platformObj.LabelType = "org.opencontainers.image"
+			platformObj := Platform{
+				Name:      toBuild.Name,
+				Channel:   channel.Name,
+				Platform:  platform,
+				Version:   version,
+				LabelType: "org.opencontainers.image",
+			}
 
 			if fileInfo, err := os.Stat(filepath.Join(subdir, channel.Name, "Dockerfile")); err == nil && !fileInfo.IsDir() {
 				platformObj.DockerfilePath = filepath.Join(subdir, channel.Name, "Dockerfile")
@@ -143,9 +150,9 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 				platformObj.DockerfilePath = filepath.Join(subdir, "Dockerfile")
 				platformObj.DockerContext = subdir
 			}
-			imagesToBuild["imagePlatforms"] = append(imagesToBuild["imagePlatforms"].([]map[string]interface{}), platformObj.toMap())
+			imagesToBuild.ImagePlatforms = append(imagesToBuild.ImagePlatforms, platformObj)
 		}
-		imagesToBuild["images"] = append(imagesToBuild["images"].([]map[string]interface{}), toBuild)
+		imagesToBuild.Images = append(imagesToBuild.Images, *toBuild)
 	}
 
 	return imagesToBuild
@@ -168,9 +175,9 @@ func main() {
 		channels = strings.Split(args[3], ",")
 	}
 
-	imagesToBuild := map[string]interface{}{
-		"images":         []map[string]interface{}{},
-		"imagePlatforms": []map[string]interface{}{},
+	imagesToBuild := ImagesToBuild{
+		ImagePlatforms: []Platform{},
+		Images:         []Image{},
 	}
 
 	selectedApps := []string{}
@@ -185,7 +192,7 @@ func main() {
 			selectedApps = append(selectedApps, strings.Split(app.Name(), "/")[0])
 		}
 	}
-	processSpecificApps(selectedApps, forRelease, force, channels, imagesToBuild)
+	processSpecificApps(selectedApps, forRelease, force, channels, &imagesToBuild)
 
 	output, err := json.Marshal(imagesToBuild)
 	if err != nil {
@@ -195,7 +202,7 @@ func main() {
 	fmt.Println(string(output))
 }
 
-func processSpecificApps(selectedApps []string, forRelease bool, force bool, channels []string, imagesToBuild map[string]interface{}) {
+func processSpecificApps(selectedApps []string, forRelease bool, force bool, channels []string, imagesToBuild *ImagesToBuild) {
 	for _, app := range selectedApps {
 		appDir := "apps/" + app
 		if _, err := os.Stat(appDir); os.IsNotExist(err) {
@@ -211,10 +218,8 @@ func processSpecificApps(selectedApps []string, forRelease bool, force bool, cha
 		}
 
 		imageToBuild := getPlatformMetadata(appDir, *meta, forRelease, force, githubApi, channels)
-		if imageToBuild != nil {
-			imagesToBuild["images"] = append(imagesToBuild["images"].([]map[string]interface{}), imageToBuild["images"].([]map[string]interface{})...)
-			imagesToBuild["imagePlatforms"] = append(imagesToBuild["imagePlatforms"].([]map[string]interface{}), imageToBuild["imagePlatforms"].([]map[string]interface{})...)
-		}
+		imagesToBuild.Images = append(imagesToBuild.Images, imageToBuild.Images...)
+		imagesToBuild.ImagePlatforms = append(imagesToBuild.ImagePlatforms, imageToBuild.ImagePlatforms...)
 	}
 }
 
