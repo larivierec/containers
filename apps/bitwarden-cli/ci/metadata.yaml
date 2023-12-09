@@ -1,5 +1,6 @@
 ---
 app: bitwarden-cli
+# not in use yet
 url: https://api.github.com/repos/bitwarden/clients/releases
 rules:
   - cli
