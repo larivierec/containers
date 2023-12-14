@@ -81,17 +81,17 @@ func getLatestVersionSh(latestShPath string, channelName string) string {
 	return strings.TrimSpace(string(out))
 }
 
-func getLatestVersion(subdir, channelName string) string {
-	ciDir := filepath.Join(subdir, "ci")
+func getLatestVersion(subDir, channelName string) string {
+	ciDir := filepath.Join(subDir, "ci")
 	if fileInfo, err := os.Stat(filepath.Join(ciDir, "latest.sh")); err == nil && !fileInfo.IsDir() {
 		return getLatestVersionSh(filepath.Join(ciDir, "latest.sh"), channelName)
-	} else if fileInfo, err := os.Stat(filepath.Join(subdir, channelName, "latest.sh")); err == nil && !fileInfo.IsDir() {
-		return getLatestVersionSh(filepath.Join(subdir, channelName, "latest.sh"), channelName)
+	} else if fileInfo, err := os.Stat(filepath.Join(subDir, channelName, "latest.sh")); err == nil && !fileInfo.IsDir() {
+		return getLatestVersionSh(filepath.Join(subDir, channelName, "latest.sh"), channelName)
 	}
 	return ""
 }
 
-func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bool, call api.Interface, channels []string) *ImagesToBuild {
+func getPlatformMetadata(subDir string, meta Metadata, forRelease bool, force bool, call api.Interface, channels []string) *ImagesToBuild {
 	imagesToBuild := &ImagesToBuild{}
 	filteredChannels := []Channel{}
 
@@ -110,7 +110,7 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 	for _, channel := range filteredChannels {
 		channelName := channel.Name
 		// call.GetPublishedReleases(meta.Url, meta.Rules)
-		version := getLatestVersion(subdir, channelName)
+		version := getLatestVersion(subDir, channelName)
 		if version == "" {
 			continue
 		}
@@ -122,7 +122,6 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 			toBuild.Name = fmt.Sprintf("%s-%s", meta.App, channel.Name)
 		}
 
-		// Skip if latest version already published
 		if !force {
 			published, resp, err := call.GetPublishedVersion(toBuild.Name)
 			if ((err == nil || resp.StatusCode == http.StatusNotFound) && published != "") && strings.Contains(published, version) {
@@ -143,12 +142,12 @@ func getPlatformMetadata(subdir string, meta Metadata, forRelease bool, force bo
 				LabelType: "org.opencontainers.image",
 			}
 
-			if fileInfo, err := os.Stat(filepath.Join(subdir, channel.Name, "Dockerfile")); err == nil && !fileInfo.IsDir() {
-				platformObj.DockerfilePath = filepath.Join(subdir, channel.Name, "Dockerfile")
-				platformObj.DockerContext = filepath.Join(subdir, channel.Name)
+			if fileInfo, err := os.Stat(filepath.Join(subDir, channel.Name, "Dockerfile")); err == nil && !fileInfo.IsDir() {
+				platformObj.DockerfilePath = filepath.Join(subDir, channel.Name, "Dockerfile")
+				platformObj.DockerContext = filepath.Join(subDir, channel.Name)
 			} else {
-				platformObj.DockerfilePath = filepath.Join(subdir, "Dockerfile")
-				platformObj.DockerContext = subdir
+				platformObj.DockerfilePath = filepath.Join(subDir, "Dockerfile")
+				platformObj.DockerContext = subDir
 			}
 			imagesToBuild.ImagePlatforms = append(imagesToBuild.ImagePlatforms, platformObj)
 		}
