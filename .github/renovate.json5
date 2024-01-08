@@ -7,10 +7,7 @@
     ":dependencyDashboard",
     ":semanticCommits",
     ":enablePreCommit",
-    ":automergeDigest",
-    ":automergeBranch",
     ":label(renovate/{{depName}})",
-    "helpers:pinGitHubActionDigests",
     "security:openssf-scorecard"
   ],
   "dependencyDashboard": true,
