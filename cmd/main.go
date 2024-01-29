@@ -48,6 +48,8 @@ type Platform struct {
 	Name           string `json:"name"`
 	Version        string `json:"version"`
 	Platform       string `json:"platform"`
+	TargetOS       string `json:"target_os"`
+	TargetArch     string `json:"target_arch"`
 	Channel        string `json:"channel"`
 	DockerfilePath string `json:"dockerfile"`
 	DockerContext  string `json:"context"`
@@ -134,12 +136,17 @@ func getPlatformMetadata(subDir string, meta Metadata, forRelease bool, force bo
 		toBuild.LabelType = "org.opencontainers.image"
 
 		for _, platform := range channel.Platforms {
+			targetOs := strings.Split(platform, "/")[0]
+			targetArch := strings.Split(platform, "/")[1]
+
 			platformObj := Platform{
-				Name:      toBuild.Name,
-				Channel:   channel.Name,
-				Platform:  platform,
-				Version:   version,
-				LabelType: "org.opencontainers.image",
+				Name:       toBuild.Name,
+				Channel:    channel.Name,
+				TargetOS:   targetOs,
+				TargetArch: targetArch,
+				Platform:   platform,
+				Version:    version,
+				LabelType:  "org.opencontainers.image",
 			}
 
 			if fileInfo, err := os.Stat(filepath.Join(subDir, channel.Name, "Dockerfile")); err == nil && !fileInfo.IsDir() {

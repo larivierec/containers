@@ -5,7 +5,7 @@ ARG TARGETPLATFORM
 ARG VERSION=3.6.1
 
 # Install dependencies
-RUN apt-get update && apt-get install -y git build-essential libsecret-1-dev
+RUN apt-get update && apt-get install -y --no-install-recommends git build-essential libsecret-1-dev
 
 # Build
 WORKDIR /build/

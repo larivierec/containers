@@ -12,7 +12,7 @@
           "args": [
               "all",
               "true",
-              "false",
+              "true",
               "stable"
           ]
       }
