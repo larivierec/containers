@@ -2,4 +2,4 @@
 
 set -e
 
-upsmon
+upsmon -F

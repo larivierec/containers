@@ -10,10 +10,10 @@
           "cwd": "${workspaceFolder}",
           "envFile": "${workspaceFolder}/.goenv",
           "args": [
-              "all",
+              "nut-client",
               "true",
               "true",
-              "stable"
+              "jammy"
           ]
       }
   ]

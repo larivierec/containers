@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Build & publish images v2
 
 on:
@@ -8,6 +9,10 @@ on:
         required: false
         type: string
         default: ''
+      channelsToBuild:
+        required: false
+        type: string
+        default: ""
       pushImages:
         required: false
         default: false
@@ -64,7 +69,11 @@ jobs:
           if [[ -z "${{ inputs.appsToBuild }}" ]]; then
             matrices=$(go run cmd/main.go "all" "${{inputs.pushImages}}" "${{inputs.force}}" "stable")
           else
-            matrices=$(go run cmd/main.go "${{ inputs.appsToBuild }}" "${{inputs.pushImages}}" "${{inputs.force}}" "stable")
+            if [[ -z "${{ inputs.channelsToBuild }}" ]]; then
+              matrices=$(go run cmd/main.go "${{ inputs.appsToBuild }}" "${{inputs.pushImages}}" "${{inputs.force}}" "stable")
+            else
+              matrices=$(go run cmd/main.go "${{ inputs.appsToBuild }}" "${{inputs.pushImages}}" "${{inputs.force}}" "${{inputs.channelsToBuild}}")
+            fi
           fi
           echo "matrices=${matrices}" >> $GITHUB_OUTPUT
           echo "${matrices}"

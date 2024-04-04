@@ -1,35 +1,42 @@
 ---
-  name: Scheduled - Build & publish images
-  
-  concurrency:
-    group: container-release
-    cancel-in-progress: false
+  # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Scheduled - Build & publish images
 
-  on:
-    workflow_dispatch:
-      inputs:
-        appsToBuild:
-          description: App(s) to build
-          required: false
-          type: string
-          default: all
-        force:
-          description: Force rebuild
-          type: boolean
-          default: false
-          required: true
-    schedule:
-      - cron: "0 * * * *"
+concurrency:
+  group: container-release
+  cancel-in-progress: false
 
-  jobs:
-    build-images:
-      name: Build Images
-      uses: ./.github/workflows/builder.yaml
-      secrets: inherit
-      permissions:
-        contents: read
-        packages: write
-      with:
-        appsToBuild: ${{ inputs.appsToBuild }}
-        pushImages: true
-        force: ${{ inputs.force == true }}
+on:
+  workflow_dispatch:
+    inputs:
+      appsToBuild:
+        description: App(s) to build
+        required: false
+        type: string
+        default: all
+      channelsToBuild:
+        description: Channels of the apps to build
+        required: false
+        type: string
+        default: ""
+      force:
+        description: Force rebuild
+        type: boolean
+        default: false
+        required: true
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  build-images:
+    name: Build Images
+    uses: ./.github/workflows/builder.yaml
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      appsToBuild: ${{ inputs.appsToBuild }}
+      channelsToBuild: ${{ inputs.channelsToBuild }}
+      pushImages: true
+      force: ${{ inputs.force == true }}

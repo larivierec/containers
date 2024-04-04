@@ -100,13 +100,14 @@ func getPlatformMetadata(subDir string, meta Metadata, forRelease bool, force bo
 	if len(channels) == 0 {
 		filteredChannels = append(filteredChannels, meta.Channels...)
 	} else {
-		for _, channel := range meta.Channels {
-			for _, channelName := range channels {
-				if channel.Name == channelName {
-					filteredChannels = append(filteredChannels, channel)
-				}
-			}
-		}
+		filteredChannels = append(filteredChannels, meta.Channels...)
+		// for _, channel := range meta.Channels {
+		// for _, channelName := range channels {
+		// if channel.Name == channelName {
+		// 	filteredChannels = append(filteredChannels, channel)
+		// }
+		// }
+		// }
 	}
 
 	for _, channel := range filteredChannels {
