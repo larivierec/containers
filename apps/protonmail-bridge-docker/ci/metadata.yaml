@@ -7,6 +7,6 @@ rules:
 version_regex:
   - v*
 channels:
-  - name: stable
+  - name: v3.10.0
     platforms: ["linux/amd64", "linux/arm64"]
     stable: true

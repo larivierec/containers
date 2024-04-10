@@ -10,10 +10,10 @@
           "cwd": "${workspaceFolder}",
           "envFile": "${workspaceFolder}/.goenv",
           "args": [
-              "nut-client",
+              "tf-runner-bw",
               "true",
               "true",
-              "jammy"
+              "v0.16.0-rc.3"
           ]
       }
   ]
