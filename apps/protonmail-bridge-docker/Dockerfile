@@ -12,7 +12,7 @@ WORKDIR /build/
 COPY build.sh /build/
 RUN bash build.sh ${VERSION} ${TARGETPLATFORM}
 
-FROM ubuntu:jammy
+FROM ubuntu:noble
 
 EXPOSE 25/tcp
 EXPOSE 143/tcp
