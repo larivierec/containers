@@ -9,7 +9,7 @@ FROM ghcr.io/flux-iac/tf-runner:v${VERSION} as runner
 USER root
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION=2024.6.1
+ARG BW_VERSION=2024.7.2
 
 RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_VERSION}
 
