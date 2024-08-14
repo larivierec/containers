@@ -1,4 +1,4 @@
-FROM golang:1.22 AS build
+FROM golang:1.23 AS build
 
 ARG TARGETPLATFORM
 # renovate: datasource=github-releases depName=ProtonMail/proton-bridge versioning=docker
