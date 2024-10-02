@@ -1,0 +1,12 @@
+---
+app: tf-runner
+# not in use yet
+url: "https://api.github.com/repos/flux-iac/tofu-controller/tags"
+rules:
+  - "[0].name"
+version_regex:
+  - v*
+channels:
+  - name: v0.16.0-rc.4
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: true

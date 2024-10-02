@@ -8,11 +8,6 @@ FROM hashicorp/terraform:1.9.6 AS terraform
 FROM ghcr.io/flux-iac/tf-runner:v${VERSION} AS runner
 USER root
 
-# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION=2024.9.0
-
-RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_VERSION}
-
 COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
 USER 65532:65532
