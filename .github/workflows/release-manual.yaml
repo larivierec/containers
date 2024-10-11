@@ -13,13 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - context: ./apps/tf-runner-bw
-            image: ghcr.io/${{ github.repository_owner }}/tf-runner-bw
           - context: ./apps/protonmail-bridge-docker
             image: ghcr.io/${{ github.repository_owner }}/protonmail-bridge-docker
           - context: ./apps/tf-runner
             image: ghcr.io/${{ github.repository_owner }}/tf-runner
-          - context: ./apps/tf-runner-bw
+          - context: ./apps/nut-client
             image: ghcr.io/${{ github.repository_owner }}/nut-client
 
     permissions:
