@@ -2,7 +2,7 @@ ARG VERSION=0.16.0-rc.4
 ARG TARGETPLATFORM
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
-FROM hashicorp/terraform:1.10.0 AS terraform
+FROM hashicorp/terraform:1.10.1 AS terraform
 
 # renovate: datasource=github-releases depName=flux-iac/tf-runner versioning=docker
 FROM ghcr.io/flux-iac/tf-runner:v${VERSION} AS runner
