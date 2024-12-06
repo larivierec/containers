@@ -1,5 +1,5 @@
 ARG VERSION
-FROM docker.io/library/alpine:3.20
+FROM docker.io/library/alpine:3.21
 
 ARG VERSION=2.6.3.4389
 ARG CHANNEL
