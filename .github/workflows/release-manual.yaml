@@ -13,12 +13,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - context: ./apps/protonmail-bridge-docker
-            image: ghcr.io/${{ github.repository_owner }}/protonmail-bridge-docker
           - context: ./apps/tf-runner
             image: ghcr.io/${{ github.repository_owner }}/tf-runner
           - context: ./apps/nut-client
             image: ghcr.io/${{ github.repository_owner }}/nut-client
+          - context: ./apps/postgres-init
+            image: ghcr.io/${{ github.repository_owner }}/postgres-init
+          - context: ./apps/tautulli
+            image: ghcr.io/${{ github.repository_owner }}/tautulli
+          - context: ./apps/plex
+            image: ghcr.io/${{ github.repository_owner }}/plex
+          - context: ./apps/prowlarr
+            image: ghcr.io/${{ github.repository_owner }}/prowlarr
+          - context: ./apps/lidarr
+            image: ghcr.io/${{ github.repository_owner }}/lidarr
+          - context: ./apps/radarr
+            image: ghcr.io/${{ github.repository_owner }}/radarr
+          - context: ./apps/sonarr
+            image: ghcr.io/${{ github.repository_owner }}/sonarr
 
     permissions:
       contents: read

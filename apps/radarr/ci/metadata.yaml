@@ -1,0 +1,6 @@
+---
+app: radarr
+channels:
+  - name: develop
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: true
