@@ -1,0 +1,9 @@
+---
+app: sonarr
+channels:
+  - name: main
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: true
+  - name: develop
+    platforms: ["linux/amd64", "linux/arm64"]
+    stable: false
